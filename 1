@@ -1,0 +1,54 @@
+import SwiftUI
+
+struct Post: Codable, Identifiable {
+    let id: Int
+    let Username: String
+    let pointsEarned: Int
+    let imageUrl: URL
+    let restaurantName: String
+    let timeSTamp: String
+    let caption: String?
+    let isCorrupt: Bool
+    let isPrivate: Bool
+}
+struct ContentView: View {
+    @State private var posts: [Post] = []
+    @State private var isLoading = true
+    
+    var body: some View {
+        NavigationView {
+            List(posts, id: \.username) { post in
+                NavigationLink(destination: PostDetailsViews(post: post)) {
+                    PostItemView(post: post)
+                }
+            }
+            .navigationBarTitle("PicNix")
+            .onAppear(perform: fetchPosts)
+        }
+    }
+    
+    func fetchPosts() {
+        if let url = URL(string: "https://www.jalirani.com/files/picnix.json.") {
+            URLSession.shared.dataTask(with: url) { data, response, error in
+                if let data = data {
+                    do {
+                        let postsRespomse = try JSONDecoder().decode(PostsResponse.self, from: data)
+                        posts = PostsResponse.posts.filter { !$0.isCorrupt }
+                    } catch {
+                        
+                    }
+                }
+                isLoading = false
+            }.resume()
+        } else {
+            isLoading = false
+        }
+    }
+}
+
+
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+    }
+}
