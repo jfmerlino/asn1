@@ -16,13 +16,18 @@ struct ItemListView: View {
 
     var body: some View {
         VStack {
-            List(viewModel.items, id: \.username) { item in
+            List(viewModel.items) { item in
                 Text(item.username)
             }
+            .foregroundColor(.black)
             /*Button("Add Item") {
                 $viewModel.addItem(username: "Username")
             }*/
         }
+        .onAppear {
+                print("Items count: \(viewModel.items.count)")
+            }
+
     }
 }
 
@@ -31,20 +36,34 @@ struct ItemListView: View {
 class ItemListViewModel: ObservableObject {
     @Published var items: [Post] = []
 
-        guard let url = URL(string: "https://www.jalirani.com/files/picnix.json.") else { return }
-        URLSession.shared.dataTask(with: url) { data, response, error in
-            guard let httpResponse = response as? HTTPURLResponse,
-                  (200...299).contains(httpResponse.statusCode) else { return }
-            if let data = data {
-                do {
-                    //Parse JSON
-                    let decodedData = try JSONDecoder().decode([Post].self, from: data)
-                    self.posts = decodedData
-                } catch {
-                    print("Error decoding JSON: \(error.localizedDescription)")
+    init() {
+        // Move your networking code inside an initializer
+        if let url = URL(string: "https://www.jalirani.com/files/picnix.json") {
+            URLSession.shared.dataTask(with: url) { data, response, error in
+                guard let httpResponse = response as? HTTPURLResponse,
+                      (200...299).contains(httpResponse.statusCode) else { return }
+                if let data = data {
+                    do {
+                        // Parse JSON
+                        let decodedData = try JSONDecoder().decode([Post].self, from: data)
+                        DispatchQueue.main.async {
+                            self.items = decodedData
+                        }
+                    } catch {
+                        print("Error decoding JSON: \(error.localizedDescription)")
+                    }
+                } else if let error = error {
+                    print("Error fetching data: \(error.localizedDescription)")
                 }
-            } else if let error = error {
-                print("Error fetching data: \(error.localizedDescription)")
-            }
-        }.resume()
+            }.resume()
+        }
+    }
 }
+
+
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+    }
+}
+
