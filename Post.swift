@@ -2,7 +2,7 @@
 //  Post.swift
 //  asn1
 //
-//  Created by Student on 10/31/23.
+//  Created by Student on 11/1/23.
 //
 
 import Foundation
@@ -20,8 +20,17 @@ struct Post: Codable, Identifiable {
     let isPrivate: Bool
     let caption: String
     
-    enum Typing: String, Codable {                          
+    enum CodingKeys: String, CodingKey {
+        case id
+        case image
+        case flow
+        case amount
+        case createdAt
+        case businessName
+        case businessID
+        case username
+        case userID
         case isPrivate = "private"
+        case caption
     }
 }
-
