@@ -9,7 +9,7 @@ import Foundation
 
 struct Post: Codable, Identifiable {
     let id: Int
-    let image: URL
+    let image: String
     let flow: String
     let amount: Int
     let createdAt: String
@@ -20,17 +20,7 @@ struct Post: Codable, Identifiable {
     let isPrivate: Bool
     let caption: String
     
-    enum Typing: String, Codable {
-        case id: Int
-        case image: URL
-        case flow: String
-        case amount: Int
-        case createdAt: String
-        case businessName: String
-        case businessID: Int
-        case username: String
-        case userID: Int
-        case caption: String
+    enum Typing: String, Codable {                          
         case isPrivate = "private"
     }
 }
